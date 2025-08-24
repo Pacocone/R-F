@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>RestaurantWorld App Demo</title>
+  <!-- Firebase SDKs (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-storage-compat.js"></script>
+
+    <!-- PWA manifest & icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <meta name="theme-color" content="#00eaff">
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('service-worker.js');
+        });
+      }
+    </script>
+
+  
+
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <!-- Modal para mostrar ticket -->
+<div id="ticketModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:16px; max-width:90vw; max-height:90vh; margin:auto; display:flex; flex-direction:column; align-items:center;">
+    <img id="ticketImg" src="" style="max-width:80vw; max-height:70vh; border-radius:8px;">
+    <button class="btn" onclick="document.getElementById('ticketModal').style.display='none';" style="margin-top:12px;">Cerrar</button>
+  </div>
+</div>
+<!-- Ventana de registro modal dark -->
+<div id="registroModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#222; color:#fff; border-radius:12px; padding:24px; max-width:340px; margin:auto; box-shadow:0 4px 16px #111;">
+    <h2 style="color:#00eaff;">Registro de usuario</h2>
+    <form id="registroForm" autocomplete="off">
+      <label style="color:#00eaff;">Email:</label>
+      <input type="email" id="regEmail" required style="background:#181818; color:#fff; border:1px solid #444;">
+      <label style="color:#00eaff;">Contraseña:</label>
+      <input type="password" id="regPassword" required style="background:#181818; color:#fff; border:1px solid #444;">
+      <label style="color:#00eaff;">Nombre de usuario:</label>
+      <input type="text" id="regUsername" required style="background:#181818; color:#fff; border:1px solid #444;">
+      <button type="submit" class="btn" style="margin-top:12px;">Registrarse</button>
+    </form>
+    <hr style="margin:18px 0; border:none; border-top:1px solid #444;">
+    <h2 style="color:#ffd700; font-size:1.1em; margin-bottom:8px;">¿Ya tienes cuenta?</h2>
+    <form id="loginForm" autocomplete="off">
+      <label style="color:#ffd700;">Email:</label>
+      <input type="email" id="loginEmail" required style="background:#181818; color:#fff; border:1px solid #444;">
+      <label style="color:#ffd700;">Contraseña:</label>
+      <input type="password" id="loginPassword" required style="background:#181818; color:#fff; border:1px solid #444;">
+      <button type="submit" class="btn" style="margin-top:12px; background:#ffd700; color:#222;">Iniciar sesión</button>
+    </form>
+    <div id="regMsg" style="margin-top:8px;"></div>
+    <div id="loginMsg" style="margin-top:8px;"></div>
+  </div>
+</div>
+<div class="container" id="mainContainer">
+<!-- Modern header for app -->
+<div style="text-align:center; margin-bottom:18px;">
+  <span style="font-size:2.7em; font-family:'Segoe UI',Arial,sans-serif; font-weight:900; font-style:italic; letter-spacing:0.08em; color:#00eaff; text-shadow:0 2px 12px #0056b3,0 0 2px #fff;">
+    R&amp;F
+  </span>
+  <br>
+  <span style="font-size:1.1em; font-family:'Montserrat',Arial,sans-serif; font-weight:600; font-style:italic; letter-spacing:0.12em; color:#ffd700; text-shadow:0 1px 8px #222;">
+    Restaurants and Friends
+  </span>
+  <br>
+  <span id="usuarioActivo" style="font-size:0.95em; color:#00eaff; font-weight:600; margin-top:8px;"></span>
+  <button id="btnLogout" style="margin-left:12px; padding:4px 12px; border-radius:6px; background:#0056b3; color:#fff; border:none; font-weight:600; cursor:pointer;">Cerrar sesión</button>
+</div>
+  <div class="lang-theme">
+    <span>
+      <img class="lang-icon" id="langLogo" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f1ea-1f1f8.svg" alt="ES">
+      <select id="lang"></select>
+    </span>
+ <span>
+  <img class="theme-icon" id="themeLogo" src="https://cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f31e.svg" alt="Light">
+  <select id="theme">
+    <option value="light">Claro</option>
+    <option value="dark">Oscuro</option>
+  </select>
+</span>  
+  </div>
+  <div class="tabs">
+  <button class="tab active" id="tabBtn0"></button>
+  <button class="tab" id="tabBtn1"></button>
+  <button class="tab" id="tabBtn2"></button>
+  <button class="tab" id="tabBtn3"></button>
+  <button class="tab" id="tabBtn4"></button>
+</div>
+<!-- Añadir Visita -->
+<div id="tab0" class="tab-content">
+  <h2 id="addTitle"></h2>
+  <form id="visitForm" autocomplete="off">
+    <label id="lblRestaurante"></label>
+    <input type="text" id="restaurante" list="restauranteList" placeholder="">
+    <datalist id="restauranteList"></datalist>
+    <label id="lblFecha"></label>
+    <input type="date" id="fecha">
+    <label id="lblCiudad"></label>
+    <input type="text" id="ciudadInput" list="ciudadList" placeholder="">
+    <datalist id="ciudadList"></datalist>
+    <label id="lblPais"></label>
+    <input type="text" id="paisInput" list="paisList" placeholder="">
+    <datalist id="paisList"></datalist>
+    <label id="lblComensales"></label>
+    <input type="number" id="comensales" min="1" value="" placeholder="">
+    <label id="lblTotal"></label>
+    <div class="flex-row">
+      <input type="number" id="total" min="0" step="0.01">
+      <select id="moneda"></select>
+    </div>
+    <label id="lblAvgPrice"></label>
+    <input type="text" id="avgPrice" readonly>
+    <label id="lblValoracion"></label>
+    <div id="stars">
+      <span class="stars" data-star="1">★</span>
+      <span class="stars" data-star="2">★</span>
+      <span class="stars" data-star="3">★</span>
+      <span class="stars" data-star="4">★</span>
+      <span class="stars" data-star="5">★</span>
+    </div>
+    <input type="hidden" id="valoracion" value="0">
+    <label id="lblReseña"></label>
+    <textarea id="reseña" placeholder=""></textarea>
+    <label id="lblTicket"></label>
+    <input type="file" id="ticket" accept="image/*" capture="environment">
+    <img id="ticketPreview" class="img-preview" style="display:none;">
+    <button type="submit" class="btn" id="btnGuardar"></button>
+  </form>
+  <div id="visitMsg"></div>
+</div>
+<!-- Resumen -->
+<div id="tab1" class="tab-content hidden">
+  <h2 id="resumenTitle"></h2>
+  <label for="year" id="lblYear"></label>
+  <select id="year"></select>
+  <label id="lblResumenRest"></label>
+  <select id="resumenRest"></select>
+  <label id="lblResumenPais"></label>
+  <select id="resumenPais"></select>
+  <label id="lblResumenCiudad"></label>
+  <select id="resumenCiudad"></select>
+  <div id="totalGastado" style="margin: 8px 0; font-weight: bold;"></div>
+  <div id="resumenCards"></div>
+</div>
+<!-- Historial -->
+<div id="tab2" class="tab-content hidden">
+  <h2 id="historialTitle"></h2>
+  <label id="lblHistRest"></label>
+  <select id="histRest"></select>
+  <label id="lblHistPais"></label>
+  <select id="histPais"></select>
+  <label id="lblHistCiudad"></label>
+  <select id="histCiudad"></select>
+  <div id="historialCards"></div>
+</div>
+<!-- Explorar -->
+<div id="tab3" class="tab-content hidden">
+  <h2 id="explorarTitle"></h2>
+  <div class="explorar-controls">
+    <label id="lblExpPais"></label>
+    <select id="explorarPais"></select>
+    <label id="lblExpCiudad"></label>
+    <select id="explorarCiudad"></select>
+    <label id="lblExpRest"></label>
+    <select id="explorarRestaurante"></select>
+    <label id="lblExpUsuario"></label>
+    <select id="explorarUsuario"></select>
+  </div>
+  <div id="explorarCards"></div>
+</div>
+<!-- AMIGOS -->
+<div id="tab4" class="tab-content hidden">
+  <h2 id="amigosTitle"></h2>
+  <label id="lblAmigosPais"></label>
+  <select id="amigosPais"></select>
+  <label id="lblAmigosCiudad"></label>
+  <select id="amigosCiudad"></select>
+  <label id="lblAmigosUsuario"></label>
+  <select id="amigosUsuario"></select>
+  <div id="amigosCards"></div>
+</div>
+

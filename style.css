@@ -1,0 +1,52 @@
+body { background: #181818; font-family: Arial, sans-serif; margin: 0; }
+
+/* RTL para idioma árabe */
+body.arabic-rtl select,
+body.arabic-rtl input,
+body.arabic-rtl textarea {
+  direction: rtl !important;
+  text-align: right !important;
+}
+    .container { max-width: 430px; margin: 0 auto; background: #222; padding: 8px; border-radius: 16px; box-shadow: 0 4px 16px #111; color: #fff; }
+    .tabs { display: flex; border-bottom: 2px solid #444; margin-bottom: 16px; gap: 4px; }
+    .tab { flex: 1; padding: 10px 0; text-align: center; cursor: pointer; font-weight: bold; font-size: 1em; letter-spacing: 1px; color: #bbb; background: none; border: none; transition: color 0.2s; }
+    .tab.active { color: #00eaff; border-bottom: 4px solid #00eaff; background: #181818; }
+    .hidden { display: none; }
+    h2 { text-align: center; margin-top: 0; font-size: 1.2em; color: #00eaff; letter-spacing: 1px; }
+    .card { background: #282828; border-radius: 12px; box-shadow: 0 2px 8px #111; padding: 10px; margin-bottom: 12px; color: #fff; }
+    .stars { color: #ffd700; font-size: 1.1em; cursor: pointer; }
+    .btn { background: linear-gradient(90deg,#00eaff,#0056b3); color: #fff; border: none; padding: 10px 0; border-radius: 8px; cursor: pointer; margin-top: 8px; font-size: 1em; font-weight: bold; letter-spacing: 1px; width: 100%; box-shadow: 0 2px 8px #0056b3; }
+    .btn:active { background: linear-gradient(90deg,#0056b3,#00eaff); }
+  select, input, textarea { margin: 4px 0 8px 0; padding: 8px; border-radius: 6px; border: 1px solid #444; width: 100%; background: #181818; color: #fff; font-size: 1em; }
+    label { font-weight: bold; color: #00eaff; }
+    .flex-row { display: flex; gap: 4px; }
+    .img-preview { width: 100px; height: 100px; object-fit: contain; margin-top: 6px; border: 1px solid #444; border-radius: 8px; background: #222; }
+    .review-list { margin: 4px 0 0 12px; }
+    .lang-theme { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+    .lang-theme select { width: 60%; }
+    .lang-icon, .theme-icon { width: 24px; height: 24px; vertical-align: middle; margin-right: 4px; }
+    .tab, .btn { text-shadow: 0 2px 8px #0056b3; }
+    option { background: #181818; color: #fff; }
+    ::placeholder { color: #bbb; }
+    .restaurante-nombre { color: #00eaff; font-weight: bold; font-size: 1em; letter-spacing: 1px; }
+    .explorar-controls { margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .usuario-nombre { color: #ffd700; font-weight: bold; }
+    .tab-content { margin-bottom: 16px; }
+    .delete-btn { background: none; border: none; cursor: pointer; width: 32px; height: 32px; margin-top: 4px; display: flex; align-items: center; justify-content: center; }
+    .delete-btn img { width: 20px; height: 20px; }
+    @media (max-width: 600px) {
+      .container { max-width: 98vw; padding: 2vw; }
+      h2 { font-size: 1em; }
+      .card { padding: 6px; }
+      .img-preview { width: 70px; height: 70px; }
+      .tab { font-size: 0.9em; }
+      label, select, input, textarea { font-size: 0.95em; }
+    }
+    body.light-mode { background: #f9f9f9; }
+    .container.light-mode { background: #fff; color: #222; }
+    .light-mode select, .light-mode input, .light-mode textarea { background: #fff !important; color: #222 !important; border: 1px solid #bbb; }
+    .light-mode .tab { color: #222; }
+    .light-mode .tab.active { color: #0056b3; border-bottom: 4px solid #0056b3; background: #fff; }
+    .light-mode .card { background: #f5f5f5; color: #222; }
+    .light-mode label { color: #0056b3; }
+    .light-mode .restaurante-nombre { color: #0056b3; }
